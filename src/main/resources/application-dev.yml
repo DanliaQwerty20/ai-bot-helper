@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  ai:
+    openai:
+      base-url: https://foundation-models.api.cloud.ru
+      api-key: <in vault>
+      chat:
+        base-url: ${spring.ai.openai.base-url}
+        options:
+          model: ai-sage/GigaChat3-10B-A1.8B
+          temperature: 0.7
+          top-p: 0.9
+          max-tokens: 512
+          frequency-penalty: 0.5
+          presence-penalty: 0.3
+      embedding:
+        base-url: ${spring.ai.openai.base-url}
+        options:
+          model: BAAI/bge-m3
+      moderation:
+        base-url: ${spring.ai.openai.base-url}
+        options:
+          model: ai-sage/GigaChat3-10B-A1.8B
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        schema-name: public
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}

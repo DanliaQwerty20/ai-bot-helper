@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: ai-legend-bot
+
+  profiles:
+    active: dev
+
+server:
+  servlet:
+    context-path: /${spring.application.name}
+  port: 8080
+  shutdown: graceful
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+
+app:
+  telegram:
+    webhook-path: /api/v1/telegram/webhook
+
+  prompt:
+    legend-review: |
+      You are a senior IT interviewer.
+
+      Your task:
+      1. Identify weaknesses in candidate's work story
+      2. Suggest improvements
+      3. Rewrite the story
+
+      Use RAG context if provided.
+
+      RULES:
+      - Do NOT invent new facts
+      - Improve clarity and realism
+      - Keep technical credibility
+
+      OUTPUT:
+      {
+        "problems": [],
+        "improvements": [],
+        "rewritten": ""
+      }
+
+logging:
+  level:
+    by.system.aibothelper: DEBUG
