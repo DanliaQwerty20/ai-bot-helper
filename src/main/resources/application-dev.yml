@@ -7,29 +7,25 @@ spring:
 
   ai:
     openai:
-      base-url: https://foundation-models.api.cloud.ru
-      api-key: <in vault>
+      api-key: ${GROQ_API_KEY}
+      base-url: https://api.groq.com/openai
       chat:
-        base-url: ${spring.ai.openai.base-url}
         options:
-          model: ai-sage/GigaChat3-10B-A1.8B
-          temperature: 0.7
-          top-p: 0.9
-          max-tokens: 512
-          frequency-penalty: 0.5
-          presence-penalty: 0.3
+          model: llama-3.3-70b-versatile
+          temperature: 0.3
       embedding:
-        base-url: ${spring.ai.openai.base-url}
-        options:
-          model: BAAI/bge-m3
-      moderation:
-        base-url: ${spring.ai.openai.base-url}
-        options:
-          model: ai-sage/GigaChat3-10B-A1.8B
+        enabled: false
+
+    ollama:
+      base-url: http://localhost:11434
+      embedding:
+        model: nomic-embed-text
+      chat:
+        model: llama3
+
     vectorstore:
       pgvector:
         initialize-schema: true
-        schema-name: public
 
 telegram:
   bot:

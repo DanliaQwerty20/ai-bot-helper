@@ -1,10 +1,12 @@
 package by.system.aibothelper.client.gpt;
 
-import by.system.aibothelper.dto.LegendResponseDto;
+import by.system.aibothelper.dto.LegendReviewResult;
 
 public interface LegendLlmClient {
 
     String review(String text, String context);
 
-    LegendResponseDto parse(String raw);
+    LegendReviewResult reviewAndParse(String text);
+
+    LegendReviewResult parse(String raw);
 }

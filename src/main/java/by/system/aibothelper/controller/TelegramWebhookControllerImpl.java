@@ -1,23 +1,20 @@
 package by.system.aibothelper.controller;
 
 import by.system.aibothelper.dto.TelegramUpdateDto;
-import by.system.aibothelper.handler.TelegramBotHandler;
-import lombok.AccessLevel;
+import by.system.aibothelper.service.facade.tg.TelegramFacade;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @RestController
 public class TelegramWebhookControllerImpl implements TelegramWebhookController {
 
-    TelegramBotHandler handler;
+    private final TelegramFacade facade;
 
     @Override
     public ResponseEntity<Void> onUpdate(TelegramUpdateDto update) {
-        this.handler.handle(update.message());
+        facade.process(update);
         return ResponseEntity.ok().build();
     }
 }

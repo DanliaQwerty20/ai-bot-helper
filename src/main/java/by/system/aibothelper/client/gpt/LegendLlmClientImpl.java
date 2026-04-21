@@ -1,7 +1,7 @@
 package by.system.aibothelper.client.gpt;
 
 import by.system.aibothelper.config.properties.PromptProperties;
-import by.system.aibothelper.dto.LegendResponseDto;
+import by.system.aibothelper.dto.LegendReviewResult;
 import by.system.aibothelper.util.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
@@ -31,7 +31,7 @@ public class LegendLlmClientImpl implements LegendLlmClient {
         var userPrompt = """
                 TEXT:
                 %s
-
+                
                 RAG CONTEXT:
                 %s
                 """.formatted(text, context);
@@ -47,18 +47,26 @@ public class LegendLlmClientImpl implements LegendLlmClient {
     }
 
     @Override
-    public LegendResponseDto parse(String raw) {
+    public LegendReviewResult reviewAndParse(String text) {
+        var raw = review(text, "");
+        return parse(raw);
+    }
+
+    @Override
+    public LegendReviewResult parse(String raw) {
 
         try {
-            var cleaned = this.clean(raw);
+            var cleaned = clean(raw);
+            var json = objectMapper.readTree(cleaned);
 
-            var json = this.objectMapper.readTree(cleaned);
-
-            var problems = JsonUtil.toList(json.get("problems"));
-            var improvements = JsonUtil.toList(json.get("improvements"));
-            var rewritten = json.get("rewritten").asText();
-
-            return new LegendResponseDto(problems, improvements, rewritten);
+            return new LegendReviewResult(
+                    JsonUtil.toList(json.get("problems")),
+                    JsonUtil.toList(json.get("improvements")),
+                    json.get("rewritten").asText(),
+                    json.get("score").asInt(),
+                    json.get("isStrong").asBoolean(),
+                    json.get("seniorComment").asText()
+            );
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse LLM response", e);

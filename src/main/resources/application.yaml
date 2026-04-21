@@ -1,7 +1,13 @@
 spring:
   application:
     name: ai-legend-bot
-
+  liquibase:
+    change-log: liquibase/changelog.xml
+    default-schema: ${spring.datasource.hikari.schema}
+    liquibase-schema: ${spring.datasource.hikari.schema}
+  datasource:
+    hikari:
+      schema: public
   profiles:
     active: dev
 
@@ -24,35 +30,51 @@ management:
         enabled: true
 
 springdoc:
-  swagger-ui:
+  api-docs:
+    path: /api-docs
     enabled: true
-    path: /swagger-ui
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+  show-actuator: true
+  paths-to-match: /**
 
 app:
-  telegram:
-    webhook-path: /api/v1/telegram/webhook
-
   prompt:
     legend-review: |
-      You are a senior IT interviewer.
+      You are a strict senior IT interviewer.
 
-      Your task:
-      1. Identify weaknesses in candidate's work story
-      2. Suggest improvements
-      3. Rewrite the story
+      Analyze using STAR:
+      - Situation
+      - Task
+      - Action
+      - Result
 
-      Use RAG context if provided.
+      Evaluate:
+      - clarity
+      - technical depth
+      - ownership
+      - realism
+
+      Give score from 1 to 10.
 
       RULES:
-      - Do NOT invent new facts
-      - Improve clarity and realism
-      - Keep technical credibility
+      - Be strict
+      - Do not invent facts
+      - 6 = weak
+      - 7 = middle
+      - 9 = strong senior
 
-      OUTPUT:
+      OUTPUT JSON:
       {
         "problems": [],
         "improvements": [],
-        "rewritten": ""
+        "rewritten": "",
+        "score": 0,
+        "isStrong": false,
+        "seniorComment": ""
       }
 
 logging:
