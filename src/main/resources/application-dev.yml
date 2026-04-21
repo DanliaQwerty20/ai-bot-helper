@@ -26,6 +26,7 @@ spring:
     vectorstore:
       pgvector:
         initialize-schema: true
+        dimensions: 768
 
 telegram:
   bot:

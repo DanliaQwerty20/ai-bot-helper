@@ -13,6 +13,8 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Component
@@ -51,40 +53,82 @@ public class LegendLlmClientImpl implements LegendLlmClient {
         var raw = review(text, "");
         return parse(raw);
     }
-
     @Override
     public LegendReviewResult parse(String raw) {
-
         try {
             var cleaned = clean(raw);
-            var json = objectMapper.readTree(cleaned);
 
-            return new LegendReviewResult(
-                    JsonUtil.toList(json.get("problems")),
-                    JsonUtil.toList(json.get("improvements")),
-                    json.get("rewritten").asText(),
-                    json.get("score").asInt(),
-                    json.get("isStrong").asBoolean(),
-                    json.get("seniorComment").asText()
-            );
+            return objectMapper.readValue(cleaned, LegendReviewResult.class);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse LLM response", e);
+            log.error("Failed to parse JSON: {}", raw);
+
+            return new LegendReviewResult(
+                    List.of("Failed to parse LLM response"),
+                    List.of("Check logs for details"),
+                    "Error processing legend",
+                    0,
+                    false,
+                    "Parsing error: " + e.getMessage()
+            );
         }
     }
 
     private String clean(String response) {
+        String cleaned = response.trim();
 
-        var cleaned = response.trim();
-
-        if (cleaned.startsWith("```")) {
-            cleaned = cleaned.replaceAll("```.*?\\n", "");
-            cleaned = cleaned.replaceAll("```", "");
-        }
+        cleaned = cleaned.replaceAll("```json\\s*", "")
+                .replaceAll("```\\s*", "");
 
         int start = cleaned.indexOf('{');
         int end = cleaned.lastIndexOf('}');
 
-        return cleaned.substring(start, end + 1);
+        if (start == -1 || end == -1) {
+            throw new RuntimeException("No JSON found in: " + response);
+        }
+
+        String json = cleaned.substring(start, end + 1);
+
+        try {
+            objectMapper.readTree(json);
+            return json;
+        } catch (Exception e) {
+            return fixIncompleteJson(json);
+        }
+    }
+
+    private String fixIncompleteJson(String json) {
+        if (!json.trim().endsWith("}")) {
+            if (json.contains("seniorComment") && !json.contains("\"}}")) {
+                json = json + "\"}";
+            } else {
+                json = json + "}";
+            }
+        }
+        return json;
+    }
+
+    private boolean isValidJson(String json) {
+        try {
+            objectMapper.readTree(json);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private String fixTruncatedJson(String json) {
+        if (json.contains("seniorComment") && !json.endsWith("\"")) {
+            json = json + "\"";
+        }
+
+        int openBraces = json.length() - json.replace("{", "").length();
+        int closeBraces = json.length() - json.replace("}", "").length();
+
+        if (openBraces > closeBraces) {
+            json = json + "}".repeat(openBraces - closeBraces);
+        }
+
+        return json;
     }
 }
