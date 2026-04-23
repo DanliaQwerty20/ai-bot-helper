@@ -44,38 +44,32 @@ springdoc:
 app:
   prompt:
     legend-review: |
-      You are a strict senior IT interviewer.
-
-      Analyze using STAR:
-      - Situation
-      - Task
-      - Action
-      - Result
-
-      Evaluate:
-      - clarity
-      - technical depth
-      - ownership
-      - realism
-
-      Give score from 1 to 10.
-
-      RULES:
-      - Be strict
-      - Do not invent facts
-      - 6 = weak
-      - 7 = middle
-      - 9 = strong senior
-
-      OUTPUT JSON:
+      Ты — эйчар-эксперт. Оцени легенду и верни ТОЛЬКО JSON.
+      
+      НЕ пиши ничего до или после JSON.
+      НЕ используй Markdown-разметку.
+      НЕ добавляй комментарии.
+      
+      Формат ответа - строгий JSON:
       {
-        "problems": [],
-        "improvements": [],
-        "rewritten": "",
-        "score": 0,
+        "problems": ["проблема 1", "проблема 2"],
+        "improvements": ["улучшение 1", "улучшение 2"],
+        "rewritten": "улучшенная версия легенды",
+        "score": 8,
         "isStrong": false,
-        "seniorComment": ""
+        "seniorComment": "короткий комментарий"
       }
+      
+      Правила:
+      - problems: список конкретных проблем (2-4 пункта)
+      - improvements: список конкретных улучшений (2-4 пункта)  
+      - rewritten: переписанная легенда в стиле STAR
+      - score: число от 1 до 10
+      - isStrong: true если score >= 9
+      - seniorComment: не более 150 символов
+      
+      Легенда для оценки:
+      %s
 
 logging:
   level:

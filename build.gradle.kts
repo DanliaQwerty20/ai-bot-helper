@@ -26,6 +26,9 @@ dependencies {
     implementation("org.springframework.ai:spring-ai-bom:0.8.1")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+    implementation("org.telegram:telegrambots:6.8.0")
+
+    compileOnly("org.apache.pdfbox:pdfbox:2.0.20")
 
     runtimeOnly("org.postgresql:postgresql")
     compileOnly("org.projectlombok:lombok")

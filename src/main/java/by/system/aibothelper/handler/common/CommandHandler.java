@@ -1,9 +1,8 @@
 package by.system.aibothelper.handler.common;
 
-import by.system.aibothelper.dto.Message;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 public interface CommandHandler {
     boolean supports(String command);
-
     void handle(Message message);
 }

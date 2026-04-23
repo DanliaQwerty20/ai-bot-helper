@@ -12,6 +12,5 @@ public class AiBotHelperApplication {
         new SpringApplicationBuilder(AiBotHelperApplication.class)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
-
     }
 }

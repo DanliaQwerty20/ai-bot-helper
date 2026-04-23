@@ -2,15 +2,14 @@ package by.system.aibothelper.handler.common.impl;
 
 import by.system.aibothelper.client.tg.TelegramClient;
 import by.system.aibothelper.component.UserStateComponent;
-import by.system.aibothelper.dto.Message;
 import by.system.aibothelper.handler.common.CommandHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Component
 @RequiredArgsConstructor
 public class CancelCommandHandler implements CommandHandler {
-
     private final TelegramClient telegramClient;
     private final UserStateComponent state;
 
@@ -21,10 +20,8 @@ public class CancelCommandHandler implements CommandHandler {
 
     @Override
     public void handle(Message message) {
-        var chatId = message.chat().id();
-
+        var chatId = message.getChatId();
         state.clear(chatId);
-
-        telegramClient.sendMessage(chatId, "❌ Отменено");
+        telegramClient.sendMessage(chatId, "❌ Действие отменено");
     }
 }
