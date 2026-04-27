@@ -46,16 +46,6 @@ public class TelegramClientImpl implements TelegramClient {
     }
 
     @Override
-    public String getFilePath(String fileId) {
-        String url = "https://api.telegram.org/bot" + botToken + "/getFile";
-        Map<String, Object> request = Map.of("file_id", fileId);
-
-        var response = restTemplate.postForObject(url, request, Map.class);
-        Map<String, Object> result = (Map<String, Object>) response.get("result");
-        return (String) result.get("file_path");
-    }
-
-    @Override
     public byte[] downloadFile(String fileId) {
         try {
             String getFileUrl = "https://api.telegram.org/bot" + botToken + "/getFile";
